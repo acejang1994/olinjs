@@ -52,7 +52,7 @@ var CALLBACKS = {
 		    	$form.find('span').html(label); // change label text in span
 		    	$form.find('input.submit').val(newVals[0]); // change button text
 				$form.attr('action', newVals[1]); // change form action
-				$(newVals[2]).append($form[0].outerHTML); // place into document
+				$(newVals[2]).append($form[0]); // place into document
 		    
 		    	// Re-register handlers - contents of jquery objects have changed!
 				registerSubmitHandlers();

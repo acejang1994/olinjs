@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var express = require('express');
 var index = require('./routes/index');
-var cats = require('./routes/cat');
 var mongoose = require('mongoose');
 var app = express();
 
@@ -23,15 +22,22 @@ var mongoURI = process.env.MONGOURI;
 
 app.get('/', index.home);
 
-app.get('/ingredients', cats.newCat);
+app.get('/ingredients', index.listIngredients);
 
-app.get('/order', cats.dispCat);
+app.get('/order', index.order);
 
-app.get('/kitchen', cats.dispByColor);
+app.get('/kitchen', index.listOrders);
 
-// mongoose.connect('mongodb://localhost/test');
-mongoose.connect(mongoURI);
+app.post('/newIngredient', index.addIngredient);
+app.post('/ingredients', index.editIngredient);
+app.post('/markOutOfStock', index.OutOfStock);
+app.post('/markInStock', index.InStock);
+app.post('/submitOrder', index.submitOrder);
 
-app.listen(PORT, function() {
-  console.log("Application running on port:", PORT);
-});
+mongoose.connect('mongodb://localhost/test');
+// mongoose.connect(mongoURI);
+app.listen(3000);
+
+// app.listen(PORT, function() {
+//   console.log("Application running on port:", PORT);
+// });
