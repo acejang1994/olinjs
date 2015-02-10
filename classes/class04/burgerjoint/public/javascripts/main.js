@@ -2,6 +2,8 @@ var $inStock; // in stock forms
 var $outOfStock; // out of stock forms
 var $editIngr; // edit buttons
 var $addIngr; // add ingredient form
+var $finishOrder; // submitting the order form
+var $checkBox; // checkbox input
 
 
 
@@ -10,29 +12,60 @@ var everything = function(){
   $editIn = $('input.edit').unbind();
   $addIn = $('form#newIngredient').unbind();
   $outOfStock = $('form.outStock').unbind();
-  $submitOrder = $('form.orderForm').unbind();
+  $checkBox = $('input.orderForm').unbind();
+  $finishOrder = $('form.kitchen').unbind();
 
-
-
-
-  $submitOrder.click(function(event){
+  $finishOrder.submit(function(event){
+    // removing the done order
+    
+    event.preventDefault();
     var $form = $(event.target).closest('form');
-    var $checked = event.target;
-    console.log('checked',checked)
-    var totalCost = $form.find('div[id="total"]');
-    var ingredientIds = [];
-    if($checked.is(':checked')) {
-      totalCost.val(totalCost.val + $checked.price);
-      ingredientIds.push($checked._id);
-    }
-    $.post('/submitOrder', {
-            'ingredientIds': ingredientIds
-    });
+    orderId = $form.attr('id')
+    $('#'+orderId).remove();
+
+    $.post('/finishOrder', orderID);
 
   });
 
 
+  $checkBox.change(function(event){
+    // adding up all of the checked boxes and update the html
+
+    var total = 0;
+    var checked = event.target;
+    
+    if($(checked).is(':checked')) {
+      total += Number($(checked).price);
+    }
+    total = total.html();
+
+    $('.total').html(total);  
+  });
+
+
+  $checkBox.submit(function(event){
+    // submit new order
+
+    var $form = $(event.target).closest('form');
+    var checked = event.target;
+
+    console.log('log something');
+
+    console.log('checked',checked)
+    var totalCost = $form.find('div[id="total"]');
+    var ingredientIds = [];
+    if($(checked).is(':checked')) {
+      totalCost.val(totalCost.val + $(checked).price);
+      ingredientIds.push($(checked)._id);
+    }
+    console.log('ingredients id', ingredientIds);
+
+    $.post('/submitOrder', ingredientIds);
+})
+
   $inStock.submit(function(event){
+
+
     event.preventDefault();
     var $form = $(event.target).closest('form');
     // debugger
@@ -48,6 +81,7 @@ var everything = function(){
   });
 
   $outOfStock.submit(function(event){
+
     event.preventDefault();
     var $form = $(event.target).closest('form');
 
@@ -63,6 +97,8 @@ var everything = function(){
   });
 
   $editIn.click(function(event){
+    // edit ingredients
+
     event.preventDefault();
       
       var $form = $(event.target).closest('form');
@@ -98,20 +134,13 @@ var everything = function(){
       console.log("status", status);
 
       $formIn = $("form.inStock").clone().first();
-      console.log("form", $formIn.serialize());
-    //   var HTML = '<form class="inStock" id=' + data._id +  'action="markOutOfStock" method="POST">
-    //   <span>'+  data.name +' : $'+  data.price'</span>
-    //   <input type="button" class="edit" value="Edit">
-    //   <input type="submit" class="submit" value="Out of Stock">
-    // </form>';
-
+      
       $formIn.attr('id', data._id);
       $formIn.find('span').html(data.name + ": $ " + data.price);
       // $formIn.html(data.name + ": $ " + data.price);
       $formIn.find('input.submit').val('Out Of Stock');
       
       $('div#in').append($formIn);
-      
 
     }).error(function(data, status){
       console.log("data", data);

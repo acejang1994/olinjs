@@ -12,6 +12,7 @@ index.home = function(req, res){
 };
 
 index.listIngredients = function (req, res) {
+		// list all of the Ingredients
 	
 	Ingredient.find().exec(function(err, results){
 		if (err){
@@ -20,6 +21,7 @@ index.listIngredients = function (req, res) {
 			var inData = [];
 			var outData = [];
 			results.forEach(function(data){
+				// sort out the data by in stock and out of stock
 				if(data.inStock){
 					inData.push(data);
 				}else{
@@ -34,7 +36,8 @@ index.listIngredients = function (req, res) {
 	})
 }
 
-index.listOrders = function (req, res) {
+index.kitchen = function (req, res) {
+	// list all of the orders in the kitchen
 	
 	Order.find().exec(function(err, results){
 		if (err){
@@ -47,16 +50,32 @@ index.listOrders = function (req, res) {
 	})
 }
 
+index.finishOrder = function (req, res) {
+	// deleting the order when the submit button is clicked
+
+	deleteId = req.body;
+	Order.find({'_id': deleteId}).remove(function(err) {
+		if(err){
+			res.status(500).send('deleting ingredients did not work');
+		}
+	});
+}
+
 index.addIngredient = function(req, res) {
+	// add Ingredient
+	
 	// create ingredient
 	console.log("request body", req.body);
 	// console.log("request", req);
+
+	// creating a new ingredient from the req body
 	var newIn = new Ingredient({
           name: req.body.name,
           price: req.body.price,
           inStock: true
 	});
 
+	// saving the newly created ingredient to mongo
 	newIn.save(function(err){
 		if(err){
 			console.log("saving failed");
@@ -66,6 +85,7 @@ index.addIngredient = function(req, res) {
 }
 
 index.editIngredient= function(req, res){
+	// edit the ingredient
 
 	Ingredient.update({'_id': req.body.id}, req.body, function(err){
 		res.end(req.body);
@@ -74,7 +94,8 @@ index.editIngredient= function(req, res){
 }
 
 index.OutOfStock = function(req, res) {
-// mark an ingredient out of stock
+	// mark an ingredient when it is out of stock
+
  	Ingredient.update({'_id':req.body.id}, {'inStock':false}, function(err) {
  		if(err){
  			res.status(500).send(err);
@@ -84,7 +105,8 @@ index.OutOfStock = function(req, res) {
 }
 
 index.InStock = function(req, res) {
-// mark an ingredient out of stock
+	// mark an ingredient when it is in stock
+
  	Ingredient.update({'_id':req.body.id}, {'inStock':true}, function(err) {
  		if(err){
  			res.status(500).send(err);
@@ -94,6 +116,8 @@ index.InStock = function(req, res) {
 }
 
 index.order = function (req, res) {
+	// list out all of the ingredients so that the customer can order
+
 	Ingredient.find().exec(function(err, results){
 		if(err){
 			res.status(500).send(err);
@@ -106,24 +130,20 @@ index.order = function (req, res) {
 }
 
 index.submitOrder = function (req, res) {
+	
+	// add the given list of ingredients to the Order schema
+	
 	console.log(req.body)
-	var ingredientIds = req.body
+	var ingredientsArray = req.body;
 	var ingredientsStr;
-	var ingredientsArray = [];
 
-	var arr = Object.keys(ingredientIds).map(function(k) { return ingredientIds[k] });
-	
-	arr.forEach(function(a) {
-    	Ingredient.find({ 'name': a }).exec(function(err, results){
-    		ingredientsArray.push(results);
-    		ingredientsStr += results;
-    	});
-	});
-	console.log(ingredientsStr);
-	
-	console.log(ingredientsArray);
+	// create an ingredientsStr from the ingredientsArray
+	ingredientsArray.forEach(function(x){
+		ingredientsStr += x;
+
+	})
+	// create a new Order
 	var newOrder = new Order({
-          customerName : 'random',
           ingredients: ingredientsArray,
           ingredientsStr: ingredientsStr
 	});
@@ -136,7 +156,8 @@ index.submitOrder = function (req, res) {
 };
 
 index.orderDone = function(req, res) {
-// remove an order
+	// remove the order
+	
 	Order.findOneAndRemove({'_id': req.body.id}, function(err, data) {
 		if(err){
 			res.status(500).send(err);	
@@ -144,7 +165,5 @@ index.orderDone = function(req, res) {
 		res.end(req.body.id);
 	});
 }
-
-
 
 module.exports= index;

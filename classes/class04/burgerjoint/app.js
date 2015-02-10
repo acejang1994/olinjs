@@ -21,23 +21,21 @@ var PORT = process.env.PORT || 3000;
 var mongoURI = process.env.MONGOURI;
 
 app.get('/', index.home);
-
 app.get('/ingredients', index.listIngredients);
-
 app.get('/order', index.order);
-
-app.get('/kitchen', index.listOrders);
+app.get('/kitchen', index.kitchen);
 
 app.post('/newIngredient', index.addIngredient);
 app.post('/ingredients', index.editIngredient);
 app.post('/markOutOfStock', index.OutOfStock);
 app.post('/markInStock', index.InStock);
 app.post('/submitOrder', index.submitOrder);
+app.post('/finishOrder', index.finishOrder);
 
-mongoose.connect('mongodb://localhost/test');
-// mongoose.connect(mongoURI);
-app.listen(3000);
+// mongoose.connect('mongodb://localhost/test');
+mongoose.connect(mongoURI);
+// app.listen(3000);
 
-// app.listen(PORT, function() {
-//   console.log("Application running on port:", PORT);
-// });
+app.listen(PORT, function() {
+  console.log("Application running on port:", PORT);
+});
