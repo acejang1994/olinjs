@@ -1,0 +1,9 @@
+<h1>List of Orders</h1>
+
+{{#each in orders}}
+	<form class = "kitchen" id = {{this._id}}, action= "finishOrder" method = "POST">
+	<p> Customer: {{customerName}} </p>
+	<p> Ingredients: {{ingredients}} </p>
+	<input type="submit" value="Done">
+	</form>
+{{#each}}

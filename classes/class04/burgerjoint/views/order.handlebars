@@ -1,0 +1,18 @@
+<h1>Order</h1>
+
+<form id="order" action="submitOrder" method="POST">
+	{{#each ingredients}}
+			<p class="ingredient">
+				<input type="checkbox" class="orderForm" id={{this._id}} name={{this.name}} 
+					   value={{this.price}}
+					   {{#unless this.inStock}}
+							disabled
+					   {{/unless}}>
+					   		{{this.name}} : ${{this.price}}<br>
+				</input>
+			</p>
+	{{/each}}
+	<div id = 'total' value = '0'>Total Cost:</div> <br>
+	<div id = 'ingreListing'>Listing of Ingredient:</div> <br>
+	<input type="submit" class = "order" value="Order">
+</form>
